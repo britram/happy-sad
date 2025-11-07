@@ -70,7 +70,7 @@ that data, while allowing only aggregate analysis by other on-path actors.
 # Message Format (ICMP)
 
 The message format for SAD is identical for both ICMPv4 and ICMPv6,
-and is depicted in {{#fig-sad-message}}
+and is depicted in {{fig-sad-message}}
 
 ~~~ artwork
     0                   1                   2                   3
@@ -105,7 +105,7 @@ can take the following values:
 
 Not Selected indicates that is sent to a non-selected candidate by the client,
 after it has made the decision not to use that candidate. See
-{{#not-selected-behavior}} for the use of this message.
+{{not-selected-behavior}} for the use of this message.
 
 When present, the Additional Data field of a Not Selected contains the DNS
 Message {{!RFC1035}} associated with the answer that 
@@ -179,7 +179,7 @@ This document has two actions for IANA:
   an RFC. 
 
 - It requests the establishment the Slow Alternative Detection ICMP Code Field
-  subregistry initialized with the contents of {{#code}}.
+  subregistry initialized with the contents of {{code}}.
 
 --- back
 
