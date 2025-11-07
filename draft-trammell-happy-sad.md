@@ -9,18 +9,18 @@ number:
 date:
 consensus: true
 v: 3
-area: WIT
-workgroup: HAPPY Working Group
+area: "Web and Internet Transport"
+workgroup: "Heuristics and Algorithms to Prioritize Protocol deploYment"
 keyword:
  - icmp
  - happy eyeballs
  - debugging
  - measurement
 venue:
-  group: HAPPY
-  type: Working Group
-  mail: happy@example.com
-  github: trammell/happy-sad
+  group: "Heuristics and Algorithms to Prioritize Protocol deploYment"
+  type: "Working Group"
+  mail: "happy@ietf.org"
+  github: "britram/happy-sad"
 
 author:
  -
@@ -90,7 +90,7 @@ The Code, HAlg (Hash Algorithm), ASR (Approximate Sample Rate), Next Header and
 Source and Destination Transport Port, and Additional Data fields are described
 in the subsections below.
 
-## Code 
+## Code
 
 The ICMP Code for a SAD message takes one of the following values, and specifies
 the message's semantics as well as the meaning of the Additional Data field. It
@@ -108,7 +108,7 @@ after it has made the decision not to use that candidate. See
 {{not-selected-behavior}} for the use of this message.
 
 When present, the Additional Data field of a Not Selected contains the DNS
-Message {{!RFC1035}} associated with the answer that 
+Message {{!RFC1035}} associated with the answer that
 
 ## Hash Algorithm (HAlg)
 
@@ -176,7 +176,7 @@ This document has two actions for IANA:
 
 - It requests the allocation of Type 44 in the ICMP Type Numbers registry for
   Slow Alternative Detection, with this document as reference on publication as
-  an RFC. 
+  an RFC.
 
 - It requests the establishment the Slow Alternative Detection ICMP Code Field
   subregistry initialized with the contents of {{code}}.
