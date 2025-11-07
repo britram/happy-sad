@@ -3,7 +3,7 @@
 title: "Slow Alternate Detection for Happy Eyeballs"
 category: info
 
-docname: draft-trammell-happy-sad
+docname: draft-trammell-happy-sad-latest
 submissiontype: IETF
 number:
 date:
