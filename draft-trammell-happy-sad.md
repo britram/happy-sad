@@ -36,24 +36,32 @@ informative:
 
 --- abstract
 
-TODO improve: one of the issues with happy eyeballs is that it masks
-configuration and deployment failures of the very protocols in the Internet that
-it is designed to accelerate the deployment of. Debugging and measuring these
-failures is difficult. This document specifies Slow Alternate Detection (SAD)
-for Happy Eyeballs, a method for exposing failure information to servers and 
-on-path devices in order to aid debugging and measurement of Happy Eyeballs.
+This document specifies Slow Alternate Detection (SAD) for Happy Eyeballs, an
+ICMP-based advisory path signal {{?RFC8558}} for exposing information about path
+non-selection on-path devices in order to aid debugging and measurement of Happy
+Eyeballs.
 
 --- middle
 
 # Introduction
 
-TODO: frontmatter goes here. 
+Happy Eyeballs {{!I-D.ietf-happy-happyeyeballs-v3}} encourages new protocol
+deployment by reducing the availabity risk associated with attempting to use
+them. However, in doing so, it masks configuration and deployment failures of
+these very protocols. There are potential causes of such failures, with
+potential root causes at the end user terminal, CPE, access network, CDN, DNS
+configuration, and end server. Given the diffusion of root causes, debugging
+these errors can be difficult.
 
-TODO: design principle: never reflect data, but send hashes of received data
-s.t. DNS information can only be recognized by an entity that already has the
-full data, supporting correlation for detailed debugging while supporting only
-aggregated measurement for 
+This document presents Slow Alternate Detection (SAD), an ICMP-based advisory
+path signal {{RFC8558}} to devices along the path of a non-selected candidate
+designed as part of an array of approaches to this problem.  It is intended to
+be used together with complementary monitoring and logging information at each
+point along the potential failure chain of a non-selected candidate.
 
+This design uses hashes of data relevant to a failure to allow the correlation
+of nonselection events to on path devices and actors who already have access to
+that data, while allowing only aggregate analysis by other on-path actors.
 
 # Conventions and Definitions
 
@@ -62,84 +70,105 @@ aggregated measurement for
 # Message Format (ICMP)
 
 The message format for SAD is identical for both ICMPv4 and ICMPv6,
-and is depicted in (TODO figurize).
+and is depicted in {{#fig-sad-message}}
 
+~~~ artwork
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |   Type = 44   |     Code        |     HAlg    |   reserved    |
+   |   Type = 44   |     Code      | HAlg  |  ASR  |    NextHdr    |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                                                               |
+   |    Source Transport Port      |  Destination Transport Port   |
+   +-------------------------------+-------------------------------+
    |                     Additional Data                           |
    |                     (code-dependent)                          |
    ...                                                           ...
+~~~
+{: #fig-sad-message title="SAD Message Format"}
 
-## Initial Code Subregistry
+The Code, HAlg (Hash Algorithm), ASR (Approximate Sample Rate), Next Header and
+Source and Destination Transport Port, and Additional Data fields are described
+in the subsections below.
 
-The ICMP Code for a SAD message takes one of the following values:
+## Code 
 
-| Code | Description                      | Additional Data       |
-|------|----------------------------------|-----------------------|
-|    0 | Not Selected                     | DNS Answer hash       |
-|    1 | Alternate A Resolution Failed    | DNS Answer hash       |
-|    2 | Alternate AAAA Resolution Failed | DNS Answer hash       |
-|    3 | Alternate Transport Timeout      | DNS Answer hash       |
-|    4 | Alternate ICMP Error             | ICMP datagram hash    |
+The ICMP Code for a SAD message takes one of the following values, and specifies
+the message's semantics as well as the meaning of the Additional Data field. It
+can take the following values:
+
+| Code  | Description                      | Additional Data       |
+|-------|----------------------------------|-----------------------|
+|    0  | Not Selected                     | hashed DNS Answer     |
+| 1-255 | Reserved                         | not present           |
 
 ### Not Selected
 
-TODO: on-path message, send to expose that a path was not selected. Hash the DNS
-answer. Determine timing.
+Not Selected indicates that is sent to a non-selected candidate by the client,
+after it has made the decision not to use that candidate. See
+{{#not-selected-behavior}} for the use of this message.
 
-### Alternate (A/AAAA) Resolution Failed
+When present, the Additional Data field of a Not Selected contains the DNS
+Message {{!RFC1035}} associated with the answer that 
 
-TODO: off-path message: send along the selected path when the resolution of a
-not selected path failed. Two codepoints: one for each failed AF. Hash the error
-answer.
+## Hash Algorithm (HAlg)
 
-### Alternate Transport Timeout
-
-TODO: off-path message, send along the selected path when the non-selected path
-failed due to connection timeout. Hash the DNS answer.
-
-### Alternate ICMP Error
-
-TODO: off-path message, send along the selected path to notify that the
-non-selected path failed with an ICMP error. Hash the ICMP datagram of the
-error.
-
-## Additional Data
-
-The Additional Data field, if present, MUST be hashed with a hash algorithm
-specified by the 
+The Hash Algorithm field determines both the length of the Additional Data field
+and the hash algorithm used to hash it. The following hash algorithms are
+available:
 
 | Value | Length | Algorithm                                                |
 |-------|--------|----------------------------------------------------------|
 |     0 |      0 | Additional Data Omitted                                  |
-|     1 |    256 | SHA256 (TODO ref)                                        |
-| 2-255 |  undef | Reserved for Future Use                                  |
+|     1 |    256 | SHA256 {{!RFC6234}}                                      |
+|  2-15 |  undef | Reserved for Future Use                                  |
 
+## Approximate Sample Rate
+
+TODO: allows the sender to expose a sample rate, if applied. Design an encoding
+for common useful sample rates.
+
+## 5-tuple fields
+
+The Next Header (or Protocol) field contains the IP protocol (e.g. TCP, UDP) of
+the non-selected path. The Source and Destination Transport Port fields contain
+the source and destination port of the non-selected path. While this will not
+allow NAT transparency of the SAD message, it does allow analysis and
+correlation across the NAT by the operator thereof. If the candidate transport
+protocol does not have port numbers, or if the client chooses not to expose
+them, these fields are set to 0.
+
+## Additional Data
+
+The Additional Data contains code-specific additional data. If present, it MUST
+be hashed with a hash algorithm specified by the Hash Algorithm field.
 
 # Protocol Behaviors
 
-## Clients
+Each of the (currently one) message code(s) associated with the SAD message has
+an associated protocol behavior, defined below.
 
-TODO: optional. can (should?) also use sampling. 
+## Not Selected {#not-selected-behavior}
 
-## Servers 
+A client sends a Not Selected message after it has decided not to use a given
+candidate identified by the 5-tuple in the Not Selected message. There is no
+guarantee of the relative timing of the SAD Not Selected message and the
+transport layer shutdown datagrams associated with this nonselection.
 
-TODO: should log if present. 
+The client may send Not Selected messages on only a sampled portion of its
+non-selected candidates. In this case, the client SHOULD expose the selected
+sample rate in the Approximate Sample Rate field.
 
-## On-Path Devices
+As this is an advisory path signal, forwarding elements and servers MUST NOT
+take any action on the receipt of a Not Selected message beyond logging them for
+later analysis.
 
-TODO: may log, without access to answers/icmp messages this still allows for
-aggregate analysis.
+If the client knows that its DNS Answer message was retrieved from an off-path
+resolver (e.g., via DoH {{?RFC8484}}), it MUST NOT include the hashed DNS Answer
+in the Not Selected message.
 
 # Security Considerations
 
-TODO security is a good idea. consider the shape of the Alternate codepoints in
-particular, because they mix paths they seem like they will be hard to do
-safely.
+TODO analyze various attacks against this approach.
 
 # IANA Considerations
 
@@ -150,14 +179,14 @@ This document has two actions for IANA:
   an RFC. 
 
 - It requests the establishment the Slow Alternative Detection ICMP Code Field
-  subregistry initialized with the contents of {{#initial-code-subregistry}}.
+  subregistry initialized with the contents of {{#code}}.
 
 --- back
 
 # Acknowledgments
 {:numbered="false"}
 
-Thanks to the participants in the discussions on deployment at the HAPPY WG
-meeting at IETF 124 in Montreal for the ideas that led to this draft, to Tommy
-Pauly for the suggestion to use ICMP, and to Martin Duke for the name of this
-extension.
+Thanks to the participants in the discussions on error reporting at the HAPPY WG
+meetings at IETF 123 in Madrid, IETF 124 in Montreal, and on the mailing list in
+between, to which this document is an answer. Special thanks to Martin Duke for
+backronyming the name of this extension.
