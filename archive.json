@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-16T01:54:13.732212+00:00",
+  "timestamp": "2026-07-19T01:57:15.543812+00:00",
   "repo": "britram/happy-sad",
   "labels": [
     {
@@ -62,9 +62,17 @@
       "labels": [],
       "body": "It might not be a great idea to broadcast the name you looked up in that case.",
       "createdAt": "2026-02-24T09:13:16Z",
-      "updatedAt": "2026-02-24T09:13:16Z",
+      "updatedAt": "2026-07-18T12:55:40Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "britram",
+          "authorAssociation": "OWNER",
+          "body": "yep, good point, will generate a PR for this one for -01.",
+          "createdAt": "2026-07-18T12:55:40Z",
+          "updatedAt": "2026-07-18T12:55:40Z"
+        }
+      ]
     }
   ],
   "pulls": []
