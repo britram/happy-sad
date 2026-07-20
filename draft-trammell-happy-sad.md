@@ -162,9 +162,15 @@ As this is an advisory path signal, forwarding elements and servers MUST NOT
 take any action on the receipt of a Not Selected message beyond logging them for
 later analysis.
 
-If the client knows that its DNS Answer message was retrieved from an off-path
-resolver (e.g., via DoH {{?RFC8484}}), it MUST NOT include the hashed DNS Answer
-in the Not Selected message.
+In the following cases, the client MUST NOT include the hashed DNS answer in the
+Not Selected message:
+
+- if the DNS Answer message was retrieved from an off-path resolver
+  (e.g., via DoH {{?RFC8484}}), since the answer would be useless to
+  an on-path resolver.
+- if the connection attempt used Encrypted Client Hello (ECH) {{?RFC9849}}
+  in the TLS handshake, since the answer might not have sufficient entropy to
+  allow the answer hash to adequately protect the server name.
 
 # Security Considerations
 
