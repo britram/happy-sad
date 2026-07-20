@@ -260,8 +260,8 @@ communicate with. The considerations in this section use the terminology of
 
 ## Exposure of the Five-Tuple
 
-{{5-tuple-fields}} describes the exposure of transport ports as a deliberate
-design decision, taken so that the operator of a NAT along the path can
+The exposure of transport ports in the SAD message is a deliberate design
+decision, taken so that the operator of a NAT along the path can
 correlate the message with its own translation state. The correlation this
 enables for the NAT operator is precisely the correlation it enables for every
 other observer of the message. A client behind a NAT ordinarily has its activity
@@ -270,8 +270,8 @@ message restores a per-flow view of that activity to any observer positioned to
 see it, including the receiving candidate itself.
 
 A client for which this exposure is unacceptable can set the port fields to
-zero, as {{5-tuple-fields}} permits, at the cost of the correlation the fields
-exist to support.
+zero, as the definition of those fields permits, at the cost of the correlation
+they exist to support.
 
 ## Linkability of the Hashed DNS Answer
 
