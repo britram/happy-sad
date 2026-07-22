@@ -162,7 +162,8 @@ Table of Contents
    See Section 4.1 for the use of this message.
 
    When present, the Additional Data field of a Not Selected contains
-   the DNS Message [RFC1035] associated with the answer that
+   the DNS Message [RFC1035] associated with the answer that led to the
+   connection attempt, hashed using the selected hash algorithm.
 
 3.2.  Hash Algorithm (HAlg)
 
