@@ -108,7 +108,7 @@ after it has made the decision not to use that candidate. See
 {{not-selected-behavior}} for the use of this message.
 
 When present, the Additional Data field of a Not Selected contains the DNS
-Message {{!RFC1035}} associated with the answer that
+Message {{!RFC1035}} associated with the answer that led to the connection attempt, hashed using the selected hash algorithm.
 
 ## Hash Algorithm (HAlg)
 
