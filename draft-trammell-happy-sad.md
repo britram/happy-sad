@@ -122,10 +122,65 @@ available:
 |     1 |    256 | SHA256 {{!RFC6234}}                                      |
 |  2-15 |  undef | Reserved for Future Use                                  |
 
-## Approximate Sample Rate
+## Approximate Sample Rate {#approximate-sample-rate}
 
-TODO: allows the sender to expose a sample rate, if applied. Design an encoding
-for common useful sample rates.
+A client that reports only a sampled subset of its non-selected candidates (see
+{{not-selected-behavior}}) uses the Approximate Sample Rate (ASR) field to expose
+the rate at which it sampled, so that a receiver can estimate the number of
+non-selection events that a given number of received messages represents. The
+field takes one of the following values:
+
+| Value | Sampling Rate             |
+|-------|---------------------------|
+|     0 | 1 in 1 (unsampled)        |
+|     1 | 1 in 2                    |
+|     2 | 1 in 5                    |
+|     3 | 1 in 10                   |
+|     4 | 1 in 20                   |
+|     5 | 1 in 50                   |
+|     6 | 1 in 100                  |
+|     7 | 1 in 200                  |
+|     8 | 1 in 500                  |
+|     9 | 1 in 1,000                |
+|    10 | 1 in 10,000               |
+|    11 | 1 in 100,000              |
+|    12 | 1 in 1,000,000            |
+|    13 | 1 in 10,000,000           |
+|    14 | Reserved for Future Use   |
+|    15 | Sampled, rate undisclosed |
+
+A client may sample its non-selected candidates at any rate it chooses, and
+SHOULD set this field to the defined value nearest, in proportional terms, to the
+rate it actually used. A receiver estimates the number of non-selection events
+that a set of messages bearing a given value represents by multiplying their
+count by the N in the value's "1 in N" rate. Because the reported value is the
+nearest defined rate rather than the exact rate applied, this estimate is
+approximate, with an error bounded by the spacing between adjacent defined rates;
+the field is named accordingly.
+
+The finer resolution at higher rates and coarser resolution at lower ones
+reflects the expected use: an individual client sampling for its own reasons
+operates at the higher rates, where the 1-2-5 spacing keeps the estimation error
+of any single value small, while the decade steps at the low end serve
+large-scale reporting deployments aggregating across many clients, for which a
+coarser rate is sufficient.
+
+A value of 0 indicates that the client is not sampling and reports every
+non-selected candidate; each such message represents exactly one non-selection
+event.
+
+A value of 15 indicates that the client is sampling but does not disclose the
+rate. A receiver MUST NOT use a message bearing this value to estimate a count of
+non-selection events, as no unbiased estimate is possible from it; it MAY log or
+count such messages as individual observations. This value allows a client to
+treat its sample rate as sensitive, at the cost of the aggregate weighting its
+messages would otherwise support; see {{sampling-as-a-privacy-control}}.
+
+A client MUST NOT set this field to a value marked Reserved for Future Use. A
+receiver that encounters a reserved value MUST treat it as it treats the value
+15, and MUST NOT use the message for count estimation; a rate defined for a
+reserved value by a later document is thereby ignored, rather than
+misinterpreted, by a receiver implementing this document.
 
 ## 5-tuple fields
 
@@ -319,7 +374,7 @@ registry will not change it. A construction that did resist such an attack, such
 as a keyed hash or a per-client salt, would do so by destroying the cross-party
 correlation the field exists to provide.
 
-## Sampling as a Privacy Control
+## Sampling as a Privacy Control {#sampling-as-a-privacy-control}
 
 The Approximate Sample Rate field described in {{approximate-sample-rate}}
 allows a client to report non-selection for only a portion of its candidates.
@@ -353,7 +408,8 @@ This document has two actions for IANA:
 Thanks to the participants in the discussions on error reporting at the HAPPY WG
 meetings at IETF 123 in Madrid, IETF 124 in Montreal, and on the mailing list in
 between, to which this document is an answer. Special thanks to Martin Duke for
-backronyming the name of this extension.
+backronyming the name of this extension, and to Martin Thomson for pointing out
+interactions with ECH.
 
-The Security and Privacy Considerations sections were written with the
-assistance of Claude Opus.
+The Approximate Sample Rate and Security and Privacy Considerations sections
+were written with the assistance of Claude Opus.
