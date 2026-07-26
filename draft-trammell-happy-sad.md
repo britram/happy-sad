@@ -411,5 +411,5 @@ between, to which this document is an answer. Special thanks to Martin Duke for
 backronyming the name of this extension, and to Martin Thomson for pointing out
 interactions with ECH.
 
-The Approximate Sample Rate and Security and Privacy Considerations sections 
+The Approximate Sample Rate and Security and Privacy Considerations sections
 were written with the assistance of Claude Opus.
