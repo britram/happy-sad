@@ -408,7 +408,8 @@ This document has two actions for IANA:
 Thanks to the participants in the discussions on error reporting at the HAPPY WG
 meetings at IETF 123 in Madrid, IETF 124 in Montreal, and on the mailing list in
 between, to which this document is an answer. Special thanks to Martin Duke for
-backronyming the name of this extension.
+backronyming the name of this extension, and to Martin Thomson for pointing out
+interactions with ECH.
 
-The Security and Privacy Considerations sections were written with the
-assistance of Claude Opus.
+The Approximate Sample Rate and Security and Privacy Considerations sections 
+were written with the assistance of Claude Opus.
